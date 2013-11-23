@@ -55,6 +55,25 @@ And /^I am logged into the admin panel$/ do
   end
 end
 
+Given /^I added three articles to the blog$/ do
+	visit '/admin/content/new'
+	fill_in "article_title", :with => "Have Fun!"
+  fill_in "article__body_and_extended_editor", :with => "This is great."
+  click_button "Publish" 
+  
+  visit '/admin/content/new'
+	fill_in "article_title", :with => "Good Morning"
+  fill_in "article__body_and_extended_editor", :with => "Good morning. How are you?"
+  click_button "Publish"
+  
+  visit '/admin/content/new'
+	fill_in "article_title", :with => "Lots of fun"
+  fill_in "article__body_and_extended_editor", :with => "This is great. We are having lots of fun and good time."
+  click_button "Publish"
+  
+  visit '/admin' 
+end
+
 # Single-line step scoper
 When /^(.*) within (.*[^:])$/ do |step, parent|
   with_scope(parent) { When step }

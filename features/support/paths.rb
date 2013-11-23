@@ -24,6 +24,12 @@ module NavigationHelpers
     #   when /^(.*)'s profile page$/i
     #     user_profile_path(User.find_by_login($1))
 
+		when /^the your posts page$/
+    	'admin/content?search[usr_id]=1'
+    
+    when /^the admin page$/
+    	'/admin'
+
     else
       begin
         page_name =~ /^the (.*) page$/

@@ -52,6 +52,24 @@ class Admin::ContentController < Admin::BaseController
     redirect_to :action => 'index'
   end
 
+	def merge
+	  # added method to merge articles - will call the article model to do the job
+	  unless current_user.admin?
+	    flash[:error] = _("Error, only an admin is allowed to perform this action")
+	  	return (redirect_to :action => 'index')
+	  end
+	  begin
+	  	article = Article.find(params[:id])
+			article.merge_with(params[:merge_with])
+			flash[:notice] = _("Successfully merged the articles")
+			#return (redirect_to :action => 'index')
+		  return (redirect_to :action => :edit, :id => params[:id])
+		rescue Exception => e
+			flash[:error] = e.message
+			return (redirect_to :action => 'index')
+		end
+	end
+
   def insert_editor
     editor = 'visual'
     editor = 'simple' if params[:editor].to_s == 'simple'
@@ -140,6 +158,12 @@ class Admin::ContentController < Admin::BaseController
   def real_action_for(action); { 'add' => :<<, 'remove' => :delete}[action]; end
 
   def new_or_edit
+  	# work around since the merge_article form (in _form) doesn'e call content#merge directly (for now)
+  	if !params[:merge_with].nil? && !params[:merge_with].empty? && current_user.admin?
+  		merge 
+  		return     # Must have a return here (even though the merge method will redirect to another page) to avoid furhter execution of the regualr new_or_edit path.
+    end
+    
     id = params[:id]
     id = params[:article][:id] if params[:article] && params[:article][:id]
     @article = Article.get_or_build_article(id)

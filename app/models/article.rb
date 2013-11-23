@@ -80,6 +80,19 @@ class Article < Content
     Article.exists?({:parent_id => self.id})
   end
 
+	def merge_with(other_article_id = nil)
+    # new method to merge two articles
+    if self.id == other_article_id
+			flash[:error] = _("Error, can't merge an article with itself")
+			return (redirect_to :action => 'index')
+		end
+		article = Article.find(other_article_id)
+		self.body += article.body
+		article.comments.each {|c| self.add_comment(c.attributes)}
+		self.save!
+		article.destroy
+  end
+  
   attr_accessor :draft, :keywords
 
   has_state(:state,
